@@ -27,7 +27,7 @@
 ## 🚀 Utiliser l'application
 
 ### En ligne
-👉 **[memoflash.github.io](https://ton-pseudo.github.io/memoflash)** *(remplace par ton URL)*
+👉 **[memoflash.github.io](https://sofiazederfeldt1-cyber.github.io/MemoFlash/)** 
 
 ### En local
 1. Clone ce dépôt :
