@@ -1,317 +1,192 @@
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MemoFlash — Apprends plus vite</title>
-  <meta name="description" content="Application d'apprentissage gratuite par flashcards, quiz et révision espacée." />
+  <title>MemoFlash — Flashcards gratuites</title>
+  <meta name="description" content="Alternative gratuite à Quizlet. Sans compte, sans abonnement." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --cream: #F7F3EE;
-      --cream2: #EDE7DC;
-      --terra: #C4622D;
-      --terra-light: #E8C4AA;
-      --terra-dark: #8B3E18;
-      --sage: #7A9E7E;
-      --sage-light: #C5DBC7;
-      --sage-dark: #4A6B4E;
-      --ink: #2C2416;
-      --ink2: #5A4F3C;
-      --ink3: #9A8E7A;
-      --white: #FFFCF8;
-      --shadow: 0 4px 20px rgba(44,36,22,0.10);
-      --radius: 16px;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-body: 'DM Sans', sans-serif;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --terra:#C4622D;--terra-light:#E8C4AA;--terra-dark:#8B3E18;
+      --sage:#7A9E7E;--sage-light:#C5DBC7;--sage-dark:#4A6B4E;
+      --radius:16px;--font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',sans-serif;
     }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--cream);
-      color: var(--ink);
-      min-height: 100vh;
-      font-size: 15px;
-      line-height: 1.6;
+    [data-theme="light"]{
+      --bg:#F7F3EE;--bg2:#EDE7DC;--surface:#FFFCF8;--border:#DDD8CE;
+      --ink:#2C2416;--ink2:#5A4F3C;--ink3:#9A8E7A;--shadow:0 4px 24px rgba(44,36,22,0.10);
+      --fc-back:#C4622D;--fc-back-txt:#fff;
     }
+    [data-theme="dark"]{
+      --bg:#1A1612;--bg2:#231F1A;--surface:#2C2620;--border:#3D3530;
+      --ink:#F0EBE3;--ink2:#B8AFA3;--ink3:#7A726A;--shadow:0 4px 24px rgba(0,0,0,0.35);
+      --fc-back:#8B3E18;--fc-back-txt:#FFE8D6;
+    }
+    body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6;transition:background .3s,color .3s}
 
     /* NAV */
-    .nav {
-      background: var(--white);
-      border-bottom: 1px solid var(--cream2);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      height: 56px;
-      position: sticky; top: 0; z-index: 100;
-    }
-    .nav-logo {
-      font-family: var(--font-display);
-      font-size: 22px;
-      color: var(--terra);
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      flex: 1;
-    }
-    .nav-logo span { color: var(--sage-dark); }
-    .nav-tabs { display: flex; gap: 4px; }
-    .nav-tab {
-      background: none; border: none; cursor: pointer;
-      padding: 6px 14px; border-radius: 20px;
-      font-family: var(--font-body); font-size: 13px; font-weight: 500;
-      color: var(--ink2); transition: all 0.2s;
-    }
-    .nav-tab:hover { background: var(--cream); }
-    .nav-tab.active { background: var(--terra); color: white; }
+    .nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 18px;display:flex;align-items:center;height:54px;position:sticky;top:0;z-index:100;gap:4px}
+    .nav-logo{font-family:var(--font-display);font-size:20px;color:var(--terra);font-weight:600;letter-spacing:-.5px;flex:1}
+    .nav-logo span{color:var(--sage-dark)}
+    .nav-tabs{display:flex;gap:2px}
+    .nav-tab{background:none;border:none;cursor:pointer;padding:5px 11px;border-radius:20px;font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--ink2);transition:all .2s}
+    .nav-tab:hover{background:var(--bg2)}
+    .nav-tab.active{background:var(--terra);color:#fff}
+    .theme-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 9px;cursor:pointer;font-size:15px;color:var(--ink2);transition:all .2s;margin-left:4px}
+    .theme-btn:hover{background:var(--bg2)}
 
-    /* MAIN */
-    .main { padding: 24px; max-width: 900px; margin: 0 auto; }
+    /* LAYOUT */
+    .main{padding:20px 18px;max-width:860px;margin:0 auto}
+    .page{display:none}.page.active{display:block}
+    .section-title{font-family:var(--font-display);font-size:18px;color:var(--ink);margin-bottom:14px}
 
-    /* PAGES */
-    .page { display: none; }
-    .page.active { display: block; }
+    /* CARD */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:background .3s,border .3s}
 
     /* HERO */
-    .hero {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 32px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      border: 1px solid var(--cream2);
-    }
-    .hero-text h1 {
-      font-family: var(--font-display);
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--ink);
-      line-height: 1.2;
-      margin-bottom: 8px;
-    }
-    .hero-text h1 span { color: var(--terra); }
-    .hero-text p { color: var(--ink2); font-size: 14px; }
-    .hero-art {
-      width: 80px; height: 80px;
-      background: linear-gradient(135deg, var(--terra-light), var(--sage-light));
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; flex-shrink: 0;
-    }
+    .hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .hero-text h1{font-family:var(--font-display);font-size:25px;font-weight:600;line-height:1.2;margin-bottom:5px}
+    .hero-text h1 span{color:var(--terra)}
+    .hero-text p{color:var(--ink2);font-size:13px}
+    .hero-art{width:68px;height:68px;background:linear-gradient(135deg,var(--terra-light),var(--sage-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
 
     /* STATS */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-    .stat-card {
-      background: var(--white);
-      border: 1px solid var(--cream2);
-      border-radius: var(--radius);
-      padding: 16px;
-      text-align: center;
-    }
-    .stat-num { font-family: var(--font-display); font-size: 28px; color: var(--terra); font-weight: 600; }
-    .stat-label { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+    .stat-num{font-family:var(--font-display);font-size:25px;color:var(--terra);font-weight:600}
+    .stat-label{font-size:12px;color:var(--ink3);margin-top:2px}
 
     /* DECK GRID */
-    .section-title {
-      font-family: var(--font-display);
-      font-size: 18px;
-      color: var(--ink);
-      margin-bottom: 14px;
-    }
-    .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
-    .deck-card {
-      background: var(--white);
-      border: 1px solid var(--cream2);
-      border-radius: var(--radius);
-      padding: 18px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .deck-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--terra-light); }
-    .deck-icon { font-size: 28px; margin-bottom: 10px; }
-    .deck-name { font-weight: 500; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
-    .deck-count { font-size: 12px; color: var(--ink3); }
-    .deck-progress { height: 4px; background: var(--cream2); border-radius: 2px; margin-top: 12px; overflow: hidden; }
-    .deck-progress-fill { height: 100%; background: var(--sage); border-radius: 2px; transition: width 0.3s; }
-    .deck-actions { display: flex; gap: 6px; margin-top: 12px; }
-    .btn-sm {
-      background: none; border: 1px solid var(--cream2);
-      border-radius: 8px; padding: 4px 10px;
-      font-size: 12px; cursor: pointer; color: var(--ink2);
-      font-family: var(--font-body); transition: all 0.2s;
-    }
-    .btn-sm:hover { background: var(--cream); }
-    .btn-sm.danger:hover { background: #fff0ee; border-color: var(--terra-light); color: var(--terra); }
-    .add-deck-card {
-      border: 2px dashed var(--cream2);
-      background: transparent;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 8px; min-height: 140px; color: var(--ink3);
-      font-size: 14px;
-    }
-    .add-deck-card:hover { border-color: var(--terra-light); color: var(--terra); background: #fff8f5; }
+    .deck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px;margin-bottom:18px}
+    .deck-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;cursor:pointer;transition:all .2s}
+    .deck-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--terra-light)}
+    .deck-icon{font-size:24px;margin-bottom:7px}
+    .deck-name{font-weight:500;font-size:14px;margin-bottom:3px}
+    .deck-count{font-size:12px;color:var(--ink3)}
+    .deck-progress{height:3px;background:var(--bg2);border-radius:2px;margin-top:9px;overflow:hidden}
+    .deck-progress-fill{height:100%;background:var(--sage);border-radius:2px;transition:width .3s}
+    .deck-actions{display:flex;gap:5px;margin-top:9px}
+    .btn-sm{background:none;border:1px solid var(--border);border-radius:7px;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--ink2);font-family:var(--font-body);transition:all .2s}
+    .btn-sm:hover{background:var(--bg2)}
+    .btn-sm.danger:hover{background:#fff0ee;border-color:var(--terra-light);color:var(--terra)}
+    [data-theme="dark"] .btn-sm.danger:hover{background:#3D1A10}
+    .add-deck-card{border:2px dashed var(--border);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:125px;color:var(--ink3);font-size:13px}
+    .add-deck-card:hover{border-color:var(--terra-light);color:var(--terra)}
 
     /* BUTTONS */
-    .btn {
-      background: var(--terra); color: white;
-      border: none; border-radius: 12px;
-      padding: 10px 20px; font-family: var(--font-body);
-      font-size: 14px; font-weight: 500; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn:hover { background: var(--terra-dark); }
-    .btn-outline {
-      background: none; color: var(--terra);
-      border: 1.5px solid var(--terra);
-      border-radius: 12px; padding: 10px 20px;
-      font-family: var(--font-body); font-size: 14px;
-      font-weight: 500; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-outline:hover { background: #fff5ef; }
-    .btn-sage { background: var(--sage); }
-    .btn-sage:hover { background: var(--sage-dark); }
+    .btn{background:var(--terra);color:#fff;border:none;border-radius:11px;padding:8px 16px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn:hover{background:var(--terra-dark)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn-outline{background:none;color:var(--terra);border:1.5px solid var(--terra);border-radius:11px;padding:8px 16px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+    .btn-outline:hover{background:rgba(196,98,45,.08)}
+    .btn-sage{background:var(--sage)}.btn-sage:hover{background:var(--sage-dark)}
+    .btn-ghost{background:var(--bg2);color:var(--ink2);border:none;border-radius:11px;padding:8px 16px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+    .btn-ghost:hover{background:var(--border)}
 
     /* MODAL */
-    .modal-overlay {
-      display: none; position: fixed;
-      inset: 0; background: rgba(44,36,22,0.45);
-      z-index: 200; align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--white);
-      border-radius: 20px; padding: 28px;
-      width: 90%; max-width: 520px;
-      max-height: 80vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(44,36,22,0.25);
-    }
-    .modal h2 { font-family: var(--font-display); font-size: 20px; margin-bottom: 18px; color: var(--ink); }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--ink2); margin-bottom: 5px; }
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%; padding: 10px 14px;
-      border: 1.5px solid var(--cream2); border-radius: 10px;
-      font-family: var(--font-body); font-size: 14px;
-      background: var(--cream); color: var(--ink);
-      outline: none; transition: border 0.2s;
-    }
-    .form-group input:focus, .form-group textarea:focus { border-color: var(--terra-light); background: white; }
-    .form-group textarea { min-height: 80px; resize: vertical; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--surface);border-radius:18px;padding:24px;width:100%;max-width:490px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--border)}
+    .modal h2{font-family:var(--font-display);font-size:18px;margin-bottom:14px}
+    .form-group{margin-bottom:12px}
+    .form-group label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:4px}
+    .form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:var(--font-body);font-size:13px;background:var(--bg);color:var(--ink);outline:none;transition:border .2s}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--terra-light)}
+    .form-group textarea{min-height:85px;resize:vertical}
+    .modal-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:16px}
 
-    /* FLASHCARD */
-    .study-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .study-title { font-family: var(--font-display); font-size: 20px; flex: 1; }
-    .progress-bar { background: var(--cream2); height: 6px; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--terra); border-radius: 3px; transition: width 0.4s; }
-
-    .flashcard-wrap { perspective: 1000px; margin: 0 auto 24px; max-width: 560px; height: 280px; cursor: pointer; }
-    .flashcard {
-      width: 100%; height: 100%;
-      position: relative; transform-style: preserve-3d;
-      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
-    }
-    .flashcard.flipped { transform: rotateY(180deg); }
-    .fc-front, .fc-back {
-      position: absolute; inset: 0;
-      border-radius: 20px; padding: 32px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; backface-visibility: hidden;
-      border: 1px solid var(--cream2);
-    }
-    .fc-front { background: var(--white); }
-    .fc-back { background: var(--terra); color: white; transform: rotateY(180deg); }
-    .fc-label { font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; opacity: 0.5; margin-bottom: 14px; }
-    .fc-text { font-family: var(--font-display); font-size: 22px; line-height: 1.4; }
-    .fc-hint { font-size: 13px; opacity: 0.6; margin-top: 10px; }
-
-    .study-actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
-    .btn-result {
-      border: none; border-radius: 14px;
-      padding: 12px 28px; font-family: var(--font-body);
-      font-size: 14px; font-weight: 500; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-fail { background: #fff0ee; color: var(--terra); border: 1.5px solid var(--terra-light); }
-    .btn-hard { background: #fdf5e4; color: #8B6914; border: 1.5px solid #F0C96A; }
-    .btn-ok { background: #f0f7f0; color: var(--sage-dark); border: 1.5px solid var(--sage-light); }
-    .btn-easy { background: var(--sage); color: white; }
-    .btn-fail:hover { background: var(--terra); color: white; }
-    .btn-hard:hover { background: #F0C96A; color: #5A3E06; }
-    .btn-ok:hover { background: var(--sage-light); }
-    .btn-easy:hover { background: var(--sage-dark); }
+    /* STUDY */
+    .study-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .study-title{font-family:var(--font-display);font-size:18px;flex:1}
+    .progress-bar{background:var(--bg2);height:5px;border-radius:3px;margin-bottom:18px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--terra);border-radius:3px;transition:width .4s}
+    .flashcard-wrap{perspective:1000px;margin:0 auto 18px;max-width:520px;height:260px;cursor:pointer}
+    .flashcard{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+    .flashcard.flipped{transform:rotateY(180deg)}
+    .fc-front,.fc-back{position:absolute;inset:0;border-radius:18px;padding:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;backface-visibility:hidden;border:1px solid var(--border)}
+    .fc-front{background:var(--surface)}
+    .fc-back{background:var(--fc-back);color:var(--fc-back-txt);transform:rotateY(180deg);border-color:transparent}
+    .fc-label{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;opacity:.5;margin-bottom:10px}
+    .fc-text{font-family:var(--font-display);font-size:20px;line-height:1.4}
+    .fc-hint{font-size:11px;opacity:.5;margin-top:9px}
+    .study-actions{display:flex;gap:8px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+    .btn-result{border:none;border-radius:11px;padding:9px 20px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+    .btn-fail{background:#fff0ee;color:var(--terra);border:1.5px solid var(--terra-light)}
+    .btn-hard{background:#fdf5e4;color:#8B6914;border:1.5px solid #F0C96A}
+    .btn-ok{background:#f0f7f0;color:var(--sage-dark);border:1.5px solid var(--sage-light)}
+    .btn-easy{background:var(--sage);color:#fff}
+    [data-theme="dark"] .btn-fail{background:#3D1A10;border-color:#8B3E18}
+    [data-theme="dark"] .btn-hard{background:#2E2510;border-color:#8B6914}
+    [data-theme="dark"] .btn-ok{background:#142014;border-color:#4A6B4E}
+    .btn-fail:hover{background:var(--terra);color:#fff}
+    .btn-hard:hover{background:#F0C96A;color:#5A3E06}
+    .btn-ok:hover{background:var(--sage-light)}
+    .btn-easy:hover{background:var(--sage-dark)}
 
     /* QUIZ */
-    .quiz-card {
-      background: var(--white); border: 1px solid var(--cream2);
-      border-radius: 20px; padding: 28px;
-      max-width: 600px; margin: 0 auto 20px;
-    }
-    .quiz-question { font-family: var(--font-display); font-size: 20px; margin-bottom: 24px; color: var(--ink); }
-    .quiz-options { display: grid; gap: 10px; }
-    .quiz-opt {
-      border: 1.5px solid var(--cream2); background: var(--cream);
-      border-radius: 12px; padding: 14px 18px;
-      cursor: pointer; text-align: left;
-      font-family: var(--font-body); font-size: 14px; color: var(--ink);
-      transition: all 0.2s; display: flex; align-items: center; gap: 10px;
-    }
-    .quiz-opt:hover { border-color: var(--terra-light); background: #fff8f5; }
-    .quiz-opt.correct { border-color: var(--sage); background: #f0f7f0; color: var(--sage-dark); }
-    .quiz-opt.wrong { border-color: var(--terra); background: #fff0ee; color: var(--terra-dark); }
-    .opt-letter {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: var(--cream2); display: flex;
-      align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600; flex-shrink: 0;
-    }
-
-    /* WRITTEN */
-    .written-input {
-      width: 100%; padding: 14px 16px;
-      border: 2px solid var(--cream2); border-radius: 12px;
-      font-family: var(--font-display); font-size: 18px;
-      background: var(--cream); color: var(--ink);
-      outline: none; transition: border 0.2s; margin-top: 16px;
-    }
-    .written-input:focus { border-color: var(--terra-light); background: white; }
-    .answer-reveal {
-      background: var(--sage-light); border-radius: 12px;
-      padding: 16px; margin-top: 14px; color: var(--sage-dark);
-      font-size: 15px; display: none;
-    }
-
-    /* LEADERBOARD */
-    .lb-row {
-      display: flex; align-items: center; gap: 14px;
-      background: var(--white); border: 1px solid var(--cream2);
-      border-radius: 14px; padding: 14px 18px; margin-bottom: 10px;
-    }
-    .lb-rank { font-family: var(--font-display); font-size: 20px; color: var(--terra); width: 32px; text-align: center; }
-    .lb-name { flex: 1; font-weight: 500; }
-    .lb-score { color: var(--ink3); font-size: 14px; }
-    .lb-badge { background: var(--terra); color: white; border-radius: 20px; padding: 2px 10px; font-size: 12px; }
+    .quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;max-width:560px;margin:0 auto 16px}
+    .quiz-question{font-family:var(--font-display);font-size:18px;margin-bottom:18px}
+    .quiz-options{display:grid;gap:7px}
+    .quiz-opt{border:1.5px solid var(--border);background:var(--bg);border-radius:11px;padding:11px 14px;cursor:pointer;text-align:left;font-family:var(--font-body);font-size:13px;color:var(--ink);transition:all .2s;display:flex;align-items:center;gap:9px}
+    .quiz-opt:hover{border-color:var(--terra-light)}
+    .quiz-opt.correct{border-color:var(--sage);background:#f0f7f0;color:var(--sage-dark)}
+    .quiz-opt.wrong{border-color:var(--terra);background:#fff0ee;color:var(--terra-dark)}
+    [data-theme="dark"] .quiz-opt.correct{background:#142014}
+    [data-theme="dark"] .quiz-opt.wrong{background:#3D1A10}
+    .opt-letter{width:23px;height:23px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+    .written-input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:11px;font-family:var(--font-display);font-size:16px;background:var(--bg);color:var(--ink);outline:none;transition:border .2s;margin-top:13px}
+    .written-input:focus{border-color:var(--terra-light)}
+    .answer-reveal{border-radius:11px;padding:12px;margin-top:11px;font-size:13px;display:none}
 
     /* TAG */
-    .tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; margin-left: 8px; }
-    .tag-new { background: var(--sage-light); color: var(--sage-dark); }
-    .tag-review { background: var(--terra-light); color: var(--terra-dark); }
-    .tag-mastered { background: var(--cream2); color: var(--ink3); }
+    .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+    .tag-new{background:var(--sage-light);color:var(--sage-dark)}
+    .tag-review{background:var(--terra-light);color:var(--terra-dark)}
+    .tag-mastered{background:var(--bg2);color:var(--ink3)}
 
-    /* RESPONSIVE */
-    @media (max-width: 600px) {
-      .stats { grid-template-columns: repeat(2,1fr); }
-      .hero { flex-direction: column; text-align: center; }
-      .nav-tabs .nav-tab span { display: none; }
+    /* INFO */
+    .info-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+    .info-section h3{font-family:var(--font-display);font-size:16px;margin-bottom:9px;color:var(--ink)}
+    .info-section p,.info-section li{font-size:13px;color:var(--ink2);line-height:1.7}
+    .info-section ul{padding-left:16px}
+    .info-section li{margin-bottom:4px}
+    .update-badge{display:inline-block;background:var(--sage-light);color:var(--sage-dark);border-radius:20px;padding:2px 9px;font-size:11px;font-weight:500;margin-bottom:7px}
+    .faq-item{border-bottom:1px solid var(--border);padding:11px 0}
+    .faq-item:last-child{border-bottom:none;padding-bottom:0}
+    .faq-q{font-weight:500;font-size:13px;color:var(--ink);margin-bottom:3px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .faq-a{font-size:13px;color:var(--ink2);line-height:1.6;display:none;margin-top:5px}
+    .faq-a.open{display:block}
+
+    /* SETTINGS */
+    .settings-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+    .settings-section h3{font-weight:500;font-size:14px;margin-bottom:5px;color:var(--ink)}
+    .settings-section p{font-size:13px;color:var(--ink2);margin-bottom:11px}
+    .theme-options{display:flex;gap:7px;flex-wrap:wrap}
+    .theme-opt{border:2px solid var(--border);border-radius:9px;padding:7px 13px;cursor:pointer;font-size:13px;color:var(--ink2);background:var(--bg);transition:all .2s;font-family:var(--font-body)}
+    .theme-opt:hover{border-color:var(--terra-light)}
+    .theme-opt.active{border-color:var(--terra);color:var(--terra);background:rgba(196,98,45,.07);font-weight:500}
+    .danger-section{background:var(--surface);border:1px solid #E8C4AA;border-radius:var(--radius);padding:20px}
+    [data-theme="dark"] .danger-section{border-color:#5A2A10}
+
+    /* COMMUNITY */
+    .share-code{font-family:monospace;font-size:26px;font-weight:700;letter-spacing:6px;color:var(--terra);text-align:center;padding:14px;background:var(--bg);border-radius:11px;border:1px solid var(--border);margin:12px 0}
+    .code-input{font-family:monospace;font-size:19px;letter-spacing:4px;padding:9px 14px;border:2px solid var(--border);border-radius:11px;background:var(--bg);color:var(--ink);outline:none;text-transform:uppercase;width:155px;text-align:center;transition:border .2s}
+    .code-input:focus{border-color:var(--terra)}
+    .drop-zone{border:2px dashed var(--border);border-radius:11px;padding:22px;text-align:center;cursor:pointer;color:var(--ink3);font-size:13px;transition:all .2s;margin-bottom:11px}
+    .drop-zone:hover{border-color:var(--terra-light);color:var(--terra)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:1000;transition:transform .3s;white-space:nowrap;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+
+    @media(max-width:560px){
+      .stats{grid-template-columns:repeat(3,1fr)}
+      .hero{flex-direction:column;text-align:center}
+      .nav-tab{padding:4px 8px;font-size:11px}
     }
   </style>
 </head>
@@ -322,9 +197,11 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('home')">Accueil</button>
     <button class="nav-tab" onclick="showPage('study')">Réviser</button>
-    <button class="nav-tab" onclick="showPage('leaderboard')">Classement</button>
+    <button class="nav-tab" onclick="showPage('community')">Communauté</button>
+    <button class="nav-tab" onclick="showPage('info')">Infos</button>
     <button class="nav-tab" onclick="showPage('settings')">Réglages</button>
   </div>
+  <button class="theme-btn" onclick="cycleTheme()" id="theme-btn" title="Changer le thème">🌙</button>
 </nav>
 
 <div class="main">
@@ -334,7 +211,7 @@
     <div class="hero">
       <div class="hero-text">
         <h1>Apprends plus vite,<br><span>retiens plus longtemps.</span></h1>
-        <p>Révision espacée · Flashcards · Quiz · Mode écrit</p>
+        <p>Flashcards · Quiz · Révision espacée · Sans compte · Gratuit</p>
       </div>
       <div class="hero-art">🌿</div>
     </div>
@@ -342,7 +219,6 @@
       <div class="stat-card"><div class="stat-num" id="stat-decks">0</div><div class="stat-label">Decks</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-cards">0</div><div class="stat-label">Cartes</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-mastered">0</div><div class="stat-label">Maîtrisées</div></div>
-      <div class="stat-card"><div class="stat-num" id="stat-streak">0🔥</div><div class="stat-label">Jours consécutifs</div></div>
     </div>
     <div class="section-title">Mes decks</div>
     <div class="deck-grid" id="deck-grid"></div>
@@ -351,12 +227,12 @@
   <!-- STUDY -->
   <div class="page" id="page-study">
     <div id="study-select">
-      <div class="section-title">Choisir un mode de révision</div>
-      <div class="form-group" style="max-width:320px;margin-bottom:20px;">
+      <div class="section-title">Réviser</div>
+      <div class="form-group" style="max-width:300px;margin-bottom:16px;">
         <label>Deck à réviser</label>
-        <select id="sel-deck"><option value="">— Sélectionner —</option></select>
+        <select id="sel-deck"><option value="">— Choisir un deck —</option></select>
       </div>
-      <div class="deck-grid" style="max-width:700px;">
+      <div class="deck-grid" style="max-width:660px;">
         <div class="deck-card" onclick="startMode('flash')"><div class="deck-icon">🃏</div><div class="deck-name">Flashcards</div><div class="deck-count">Recto / verso classique</div></div>
         <div class="deck-card" onclick="startMode('spaced')"><div class="deck-icon">🧠</div><div class="deck-name">Révision espacée</div><div class="deck-count">Algorithme SM-2</div></div>
         <div class="deck-card" onclick="startMode('quiz')"><div class="deck-icon">✅</div><div class="deck-name">Quiz QCM</div><div class="deck-count">4 choix par question</div></div>
@@ -364,25 +240,17 @@
       </div>
     </div>
 
-    <!-- FLASHCARD MODE -->
     <div id="mode-flash" style="display:none;">
       <div class="study-header">
-        <button class="btn-outline" style="padding:6px 14px;font-size:13px;" onclick="exitStudy()">← Retour</button>
-        <div class="study-title" id="flash-title">Deck</div>
-        <span id="flash-counter" style="color:var(--ink3);font-size:14px;"></span>
+        <button class="btn-ghost" style="padding:5px 12px;font-size:12px;" onclick="exitStudy()">← Retour</button>
+        <div class="study-title" id="flash-title"></div>
+        <span id="flash-counter" style="color:var(--ink3);font-size:12px;"></span>
       </div>
       <div class="progress-bar"><div class="progress-fill" id="flash-prog"></div></div>
       <div class="flashcard-wrap" onclick="flipCard()">
         <div class="flashcard" id="flashcard">
-          <div class="fc-front">
-            <div class="fc-label">Question</div>
-            <div class="fc-text" id="fc-front-text">...</div>
-            <div class="fc-hint">Cliquer pour révéler</div>
-          </div>
-          <div class="fc-back">
-            <div class="fc-label" style="opacity:0.7;">Réponse</div>
-            <div class="fc-text" id="fc-back-text">...</div>
-          </div>
+          <div class="fc-front"><div class="fc-label">Question</div><div class="fc-text" id="fc-front-text"></div><div class="fc-hint">Cliquer pour révéler</div></div>
+          <div class="fc-back"><div class="fc-label">Réponse</div><div class="fc-text" id="fc-back-text"></div></div>
         </div>
       </div>
       <div id="flash-result-btns" style="display:none;">
@@ -393,413 +261,667 @@
           <button class="btn-result btn-easy" onclick="nextCard('easy')">Facile ✓</button>
         </div>
       </div>
-      <div id="flash-show-btn" style="text-align:center;">
-        <button class="btn" onclick="showAnswer()">Voir la réponse</button>
-      </div>
+      <div id="flash-show-btn" style="text-align:center;"><button class="btn" onclick="showAnswer()">Voir la réponse</button></div>
     </div>
 
-    <!-- QUIZ MODE -->
     <div id="mode-quiz" style="display:none;">
       <div class="study-header">
-        <button class="btn-outline" style="padding:6px 14px;font-size:13px;" onclick="exitStudy()">← Retour</button>
-        <div class="study-title" id="quiz-title">Quiz</div>
-        <span id="quiz-score-disp" style="color:var(--ink3);font-size:14px;"></span>
+        <button class="btn-ghost" style="padding:5px 12px;font-size:12px;" onclick="exitStudy()">← Retour</button>
+        <div class="study-title" id="quiz-title"></div>
+        <span id="quiz-score-disp" style="color:var(--ink3);font-size:12px;"></span>
       </div>
       <div class="progress-bar"><div class="progress-fill" id="quiz-prog"></div></div>
       <div class="quiz-card">
-        <div class="quiz-question" id="quiz-q">...</div>
+        <div class="quiz-question" id="quiz-q"></div>
         <div class="quiz-options" id="quiz-opts"></div>
       </div>
-      <div id="quiz-next-wrap" style="text-align:center;display:none;">
-        <button class="btn" onclick="nextQuiz()">Question suivante →</button>
-      </div>
+      <div id="quiz-next-wrap" style="text-align:center;display:none;"><button class="btn" onclick="nextQuiz()">Suivante →</button></div>
     </div>
 
-    <!-- WRITTEN MODE -->
     <div id="mode-written" style="display:none;">
       <div class="study-header">
-        <button class="btn-outline" style="padding:6px 14px;font-size:13px;" onclick="exitStudy()">← Retour</button>
-        <div class="study-title" id="written-title">Mode écrit</div>
-        <span id="written-counter" style="color:var(--ink3);font-size:14px;"></span>
+        <button class="btn-ghost" style="padding:5px 12px;font-size:12px;" onclick="exitStudy()">← Retour</button>
+        <div class="study-title" id="written-title"></div>
+        <span id="written-counter" style="color:var(--ink3);font-size:12px;"></span>
       </div>
       <div class="progress-bar"><div class="progress-fill" id="written-prog"></div></div>
       <div class="quiz-card">
-        <div class="quiz-question" id="written-q">...</div>
-        <input class="written-input" id="written-ans" placeholder="Votre réponse..." autocomplete="off" />
+        <div class="quiz-question" id="written-q"></div>
+        <input class="written-input" id="written-ans" placeholder="Votre réponse..." autocomplete="off" onkeydown="if(event.key==='Enter')checkWritten()" />
         <div class="answer-reveal" id="written-reveal"></div>
-        <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;" id="written-btns">
+        <div style="margin-top:12px;display:flex;gap:7px;justify-content:center;" id="written-btns">
           <button class="btn" onclick="checkWritten()">Vérifier ✓</button>
         </div>
       </div>
     </div>
 
-    <!-- END SCREEN -->
-    <div id="mode-end" style="display:none;text-align:center;padding:40px 20px;">
-      <div style="font-size:64px;margin-bottom:16px;">🎉</div>
-      <div style="font-family:var(--font-display);font-size:26px;margin-bottom:8px;" id="end-title">Session terminée !</div>
-      <div style="color:var(--ink2);margin-bottom:28px;" id="end-stats"></div>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <button class="btn-outline" onclick="exitStudy()">← Accueil</button>
+    <div id="mode-end" style="display:none;text-align:center;padding:36px 18px;">
+      <div style="font-size:56px;margin-bottom:12px;">🎉</div>
+      <div style="font-family:var(--font-display);font-size:22px;margin-bottom:5px;" id="end-title"></div>
+      <div style="color:var(--ink2);margin-bottom:22px;" id="end-stats"></div>
+      <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-ghost" onclick="exitStudy()">← Accueil</button>
         <button class="btn" onclick="restartStudy()">Recommencer 🔄</button>
       </div>
     </div>
   </div>
 
-  <!-- LEADERBOARD -->
-  <div class="page" id="page-leaderboard">
-    <div class="section-title">Classement</div>
-    <div id="lb-list"></div>
-    <div style="margin-top:20px;">
-      <div class="section-title" style="font-size:15px;margin-bottom:10px;">Ajouter mon score</div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <input id="lb-name-inp" placeholder="Votre pseudo" style="padding:10px 14px;border:1.5px solid var(--cream2);border-radius:10px;font-family:var(--font-body);font-size:14px;background:var(--cream);color:var(--ink);outline:none;flex:1;min-width:150px;" />
-        <button class="btn" onclick="addScore()">Enregistrer 🏆</button>
+  <!-- COMMUNITY -->
+  <div class="page" id="page-community">
+    <div class="section-title">Decks communautaires</div>
+    <div class="card" style="margin-bottom:14px;">
+      <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:7px;">Trouver un deck partagé</h3>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:13px;">Entre le code à 6 caractères partagé par quelqu'un pour récupérer son deck.</p>
+      <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:4px;">
+        <input class="code-input" id="search-code" maxlength="6" placeholder="MH46JK" oninput="this.value=this.value.toUpperCase()" />
+        <button class="btn" onclick="fetchDeck()" id="fetch-btn">Rechercher</button>
       </div>
+      <div id="fetch-result"></div>
+    </div>
+    <div class="card">
+      <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:7px;">Partager un de mes decks</h3>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:13px;">Publie un deck avec un code unique — toute personne ayant ce code peut le récupérer.</p>
+      <div class="form-group" style="max-width:290px;">
+        <label>Deck à partager</label>
+        <select id="share-deck-sel"></select>
+      </div>
+      <button class="btn btn-sage" onclick="shareDeck()">Publier ce deck</button>
+      <div id="share-result" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="page" id="page-info">
+    <div class="section-title">Informations</div>
+    <div class="info-section">
+      <h3>🌿 Comment fonctionne MemoFlash ?</h3>
+      <p style="margin-bottom:9px;">MemoFlash est une application d'apprentissage <strong>gratuite</strong>, <strong>open source</strong> et <strong>sans compte</strong>.</p>
+      <ul>
+        <li><strong>Tes decks restent sur ton appareil.</strong> Tout est stocké dans ton navigateur (localStorage).</li>
+        <li><strong>Pas de compte nécessaire.</strong> Ouvre l'app et commence directement.</li>
+        <li><strong>Partage par code.</strong> Publie un deck pour obtenir un code à 6 caractères à partager.</li>
+        <li><strong>Import Quizlet.</strong> Copie-colle tes sets Quizlet directement dans Réglages.</li>
+        <li><strong>Sauvegarde.</strong> Exporte tes decks en .json pour ne jamais les perdre.</li>
+      </ul>
+    </div>
+    <div class="info-section">
+      <h3>🚀 Nouveautés</h3>
+      <div style="margin-bottom:12px;">
+        <div class="update-badge">v2.0 — Version actuelle</div>
+        <ul>
+          <li>🌙 Thème sombre (auto selon le système + réglage manuel)</li>
+          <li>🌐 Partage de decks via code communautaire (Supabase)</li>
+          <li>📥 Import Quizlet (format tabulation, virgule ou point-virgule)</li>
+          <li>ℹ️ Page Infos & FAQ</li>
+          <li>🐛 Signalement de bug via GitHub Issues</li>
+          <li>✨ Interface entièrement repensée</li>
+        </ul>
+      </div>
+      <div>
+        <div class="update-badge" style="background:var(--bg2);color:var(--ink3);">v1.0</div>
+        <ul>
+          <li>Flashcards, Quiz QCM, Mode écrit, Révision espacée SM-2</li>
+          <li>Import/Export JSON, import en lot question;réponse</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>❓ FAQ</h3>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Est-ce vraiment gratuit ? <span>+</span></div><div class="faq-a">Oui, totalement. Pas d'abonnement, pas de fonctionnalités cachées. Le code source est ouvert sur GitHub sous licence MIT.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Mes données sont-elles sécurisées ? <span>+</span></div><div class="faq-a">Tes decks locaux sont uniquement dans ton navigateur — personne d'autre ne peut y accéder. Seuls les decks que tu publies volontairement sont envoyés sur le serveur.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Comment ne pas perdre mes decks ? <span>+</span></div><div class="faq-a">Réglages → Exporter. Tu obtiens un fichier .json à garder. Si tu vides ton cache ou changes de navigateur, importe ce fichier pour tout retrouver.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Comment importer depuis Quizlet ? <span>+</span></div><div class="faq-a">Dans Quizlet : ouvre ton set → "..." → "Exporter" → séparateur Tabulation → "Copier le texte". Puis dans MemoFlash : Réglages → "Import Quizlet" → colle le texte.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Le site marche-t-il sans internet ? <span>+</span></div><div class="faq-a">Oui pour tout ce qui est local (créer, réviser, quiz). Non pour rechercher ou partager des decks communautaires, qui nécessitent le serveur.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Comment fonctionne la révision espacée ? <span>+</span></div><div class="faq-a">On utilise l'algorithme SM-2 (le même qu'Anki). Les cartes que tu trouves faciles reviennent moins souvent, les difficiles plus souvent. Chaque session optimise ton temps de révision.</div></div>
     </div>
   </div>
 
   <!-- SETTINGS -->
   <div class="page" id="page-settings">
-    <div class="section-title">Réglages & Données</div>
+    <div class="section-title">Réglages</div>
 
-    <div style="background:var(--white);border:1px solid var(--cream2);border-radius:16px;padding:24px;margin-bottom:16px;">
-      <div style="font-weight:500;margin-bottom:8px;">Exporter mes decks</div>
-      <div style="color:var(--ink2);font-size:14px;margin-bottom:14px;">Télécharge un fichier JSON avec tous tes decks. Partage-le avec d'autres utilisateurs de MemoFlash !</div>
-      <button class="btn" onclick="exportData()">Exporter (.json) ↓</button>
+    <div class="settings-section">
+      <h3>🎨 Apparence</h3>
+      <p>Suit les préférences de ton système en mode Auto, ou choisis manuellement.</p>
+      <div class="theme-options">
+        <button class="theme-opt" id="opt-auto" onclick="setThemePref('auto')">🌗 Auto (système)</button>
+        <button class="theme-opt" id="opt-light" onclick="setThemePref('light')">☀️ Clair</button>
+        <button class="theme-opt" id="opt-dark" onclick="setThemePref('dark')">🌙 Sombre</button>
+      </div>
     </div>
 
-    <div style="background:var(--white);border:1px solid var(--cream2);border-radius:16px;padding:24px;margin-bottom:16px;">
-      <div style="font-weight:500;margin-bottom:8px;">Importer des decks</div>
-      <div style="color:var(--ink2);font-size:14px;margin-bottom:14px;">Charge un fichier .json exporté depuis MemoFlash.</div>
-      <div onclick="document.getElementById('import-file').click()" style="border:2px dashed var(--cream2);border-radius:12px;padding:24px;text-align:center;cursor:pointer;color:var(--ink3);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--terra-light)';this.style.color='var(--terra)'" onmouseout="this.style.borderColor='var(--cream2)';this.style.color='var(--ink3)'">
-        <div style="font-size:32px;margin-bottom:8px;">📂</div>
-        <div style="font-size:14px;">Cliquer pour charger un fichier .json</div>
-      </div>
+    <div class="settings-section">
+      <h3>📤 Exporter mes decks</h3>
+      <p>Télécharge tous tes decks en fichier .json. Fais-le régulièrement comme sauvegarde !</p>
+      <button class="btn" onclick="exportData()">Exporter (.json)</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>📂 Importer des decks (.json)</h3>
+      <p>Charge un fichier exporté depuis MemoFlash. Les decks s'ajouteront aux tiens.</p>
+      <div class="drop-zone" onclick="document.getElementById('import-file').click()">📂 Cliquer pour choisir un fichier .json</div>
       <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)" />
     </div>
 
-    <div style="background:var(--white);border:1px solid var(--cream2);border-radius:16px;padding:24px;margin-bottom:16px;">
-      <div style="font-weight:500;margin-bottom:8px;">Import en lot (CSV simplifié)</div>
-      <div style="color:var(--ink2);font-size:14px;margin-bottom:14px;">Une carte par ligne, format : <code>question;réponse</code></div>
+    <div class="settings-section">
+      <h3>⬇️ Importer depuis Quizlet</h3>
+      <p>Dans Quizlet : ouvre ton set → <strong>...</strong> → <strong>Exporter</strong> → séparateur <strong>Tabulation</strong> → <strong>Copier le texte</strong>. Colle ici :</p>
       <div class="form-group">
-        <label>Deck cible</label>
-        <select id="bulk-deck" style="max-width:280px;"></select>
+        <label>Deck de destination</label>
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+          <select id="quizlet-deck-sel" style="flex:1;min-width:170px;"></select>
+          <button class="btn-ghost" style="font-size:12px;padding:7px 11px;" onclick="openModal('modal-new-deck');window._fromQuizlet=true;">+ Nouveau</button>
+        </div>
       </div>
       <div class="form-group">
-        <textarea id="bulk-text" placeholder="Capitale de la France;Paris&#10;Symbole du fer;Fe&#10;Auteur de Hamlet;Shakespeare"></textarea>
+        <label>Texte copié depuis Quizlet (tabulation entre terme et définition)</label>
+        <textarea id="quizlet-text" placeholder="Photosynthèse&#9;Processus par lequel les plantes...&#10;Mitochondrie&#9;Organite cellulaire responsable..." style="font-size:13px;min-height:110px;"></textarea>
       </div>
-      <button class="btn" onclick="bulkImport()">Importer les cartes</button>
+      <button class="btn" onclick="importQuizlet()">Importer ✓</button>
     </div>
 
-    <div style="background:var(--white);border:1px solid #fde8e4;border-radius:16px;padding:24px;">
-      <div style="font-weight:500;color:var(--terra);margin-bottom:8px;">Zone danger</div>
-      <div style="color:var(--ink2);font-size:14px;margin-bottom:14px;">Supprimer toutes les données locales (irréversible).</div>
+    <div class="settings-section">
+      <h3>📋 Import en lot (format question;réponse)</h3>
+      <p>Une carte par ligne : <code style="background:var(--bg2);padding:1px 5px;border-radius:4px;font-size:12px;">question;réponse</code></p>
+      <div class="form-group"><label>Deck de destination</label><select id="bulk-deck"></select></div>
+      <div class="form-group"><textarea id="bulk-text" placeholder="Capitale de la France;Paris&#10;Symbole du fer;Fe"></textarea></div>
+      <button class="btn" onclick="bulkImport()">Importer</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>🐛 Signaler un bug</h3>
+      <p>Tu as trouvé un problème ? Décris-le sur GitHub Issues — ça nous aide énormément !</p>
+      <button class="btn-ghost" onclick="window.open('https://github.com/sofiazederfeldt1-cyber/memoflash/issues/new','_blank')">Ouvrir GitHub Issues ↗</button>
+    </div>
+
+    <div class="danger-section">
+      <h3 style="font-weight:500;font-size:14px;color:var(--terra);margin-bottom:5px;">⚠️ Zone danger</h3>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:11px;">Supprime toutes les données locales. Irréversible — exporte d'abord !</p>
       <button class="btn" style="background:#dc3545;" onclick="clearAll()">Tout effacer</button>
     </div>
   </div>
 
 </div>
 
-<!-- MODAL: NEW DECK -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL NEW DECK -->
 <div class="modal-overlay" id="modal-new-deck">
   <div class="modal">
     <h2>Créer un deck</h2>
     <div class="form-group"><label>Nom du deck</label><input id="deck-name-inp" placeholder="Ex: Capitales du monde" /></div>
-    <div class="form-group"><label>Icône (emoji)</label><input id="deck-icon-inp" placeholder="🌍" maxlength="2" style="max-width:80px;" /></div>
+    <div class="form-group"><label>Icône (emoji)</label><input id="deck-icon-inp" placeholder="🌍" maxlength="2" style="max-width:75px;" /></div>
     <div class="modal-actions">
-      <button class="btn-outline" onclick="closeModal('modal-new-deck')">Annuler</button>
+      <button class="btn-ghost" onclick="closeModal('modal-new-deck')">Annuler</button>
       <button class="btn" onclick="createDeck()">Créer ✓</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: DECK DETAIL -->
+<!-- MODAL DECK DETAIL -->
 <div class="modal-overlay" id="modal-deck">
   <div class="modal">
-    <h2 id="modal-deck-title">Deck</h2>
-    <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
-      <button class="btn" style="font-size:13px;padding:8px 16px;" onclick="studyFromDeck()">Réviser ce deck 🎯</button>
-      <button class="btn btn-sage" style="font-size:13px;padding:8px 16px;" onclick="openAddCard()">+ Ajouter une carte</button>
+    <h2 id="modal-deck-title"></h2>
+    <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="btn" style="font-size:12px;padding:6px 13px;" onclick="studyFromDeck()">Réviser 🎯</button>
+      <button class="btn btn-sage" style="font-size:12px;padding:6px 13px;" onclick="openAddCard()">+ Carte</button>
     </div>
     <div id="modal-deck-cards"></div>
-    <div class="modal-actions"><button class="btn-outline" onclick="closeModal('modal-deck')">Fermer</button></div>
+    <div class="modal-actions"><button class="btn-ghost" onclick="closeModal('modal-deck')">Fermer</button></div>
   </div>
 </div>
 
-<!-- MODAL: ADD CARD -->
+<!-- MODAL ADD CARD -->
 <div class="modal-overlay" id="modal-add-card">
   <div class="modal">
     <h2>Ajouter une carte</h2>
     <div class="form-group"><label>Recto (question)</label><textarea id="card-front-inp" placeholder="Ex: Quelle est la capitale de l'Espagne ?"></textarea></div>
     <div class="form-group"><label>Verso (réponse)</label><textarea id="card-back-inp" placeholder="Madrid"></textarea></div>
     <div class="modal-actions">
-      <button class="btn-outline" onclick="closeModal('modal-add-card')">Annuler</button>
+      <button class="btn-ghost" onclick="closeModal('modal-add-card')">Annuler</button>
       <button class="btn" onclick="addCard()">Ajouter ✓</button>
     </div>
   </div>
 </div>
 
+<!-- MODAL SHARE CODE -->
+<div class="modal-overlay" id="modal-share">
+  <div class="modal" style="text-align:center;">
+    <h2>Deck publié ! 🎉</h2>
+    <p style="font-size:13px;color:var(--ink2);margin-bottom:5px;">Partage ce code à tes amis :</p>
+    <div class="share-code" id="share-code-display"></div>
+    <p style="font-size:12px;color:var(--ink3);margin-bottom:14px;">Ils entrent ce code dans <strong>Communauté → Trouver un deck</strong></p>
+    <button class="btn" onclick="copyCode()">Copier le code</button>
+    <div class="modal-actions" style="justify-content:center;margin-top:10px;">
+      <button class="btn-ghost" onclick="closeModal('modal-share')">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  let data = JSON.parse(localStorage.getItem('memoflash') || '{"decks":[],"scores":[],"streak":0,"lastStudy":""}');
-  let currentDeckId = null;
-  let studyCards = [], studyIdx = 0, studyMode = '', studyScore = 0;
-  let quizAnswered = false, writtenChecked = false;
+// ── DATA ──────────────────────────────────────────────────────
+let data = JSON.parse(localStorage.getItem('memoflash_v2') || '{"decks":[]}');
+let currentDeckId = null;
+let studyCards = [], studyIdx = 0, studyMode = '', studyScore = 0;
+let quizAnswered = false, writtenChecked = false;
 
-  function save() { localStorage.setItem('memoflash', JSON.stringify(data)); }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+// ⚙️ SUPABASE — remplace ces deux valeurs sur supabase.com (gratuit)
+// 1. Crée un projet sur https://supabase.com
+// 2. SQL Editor → exécute : CREATE TABLE decks (share_code TEXT PRIMARY KEY, name TEXT, icon TEXT, cards_json TEXT);
+// 3. Copie l'URL et la clé "anon public" ici :
+const SUPABASE_URL = 'https://VOTRE_PROJET.supabase.co';
+const SUPABASE_KEY = 'VOTRE_CLE_ANON_PUBLIQUE';
 
-  function showPage(p) {
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-    document.getElementById('page-' + p).classList.add('active');
-    document.querySelectorAll('.nav-tab').forEach((t, i) => {
-      t.classList.toggle('active', ['home','study','leaderboard','settings'][i] === p);
-    });
-    if (p === 'home') renderHome();
-    if (p === 'study') renderStudyPage();
-    if (p === 'leaderboard') renderLB();
-    if (p === 'settings') renderBulkDeckSelect();
-  }
+function save() { localStorage.setItem('memoflash_v2', JSON.stringify(data)); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function genCode() {
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
 
-  function renderHome() {
-    const total = data.decks.reduce((a,d) => a + d.cards.length, 0);
-    const mastered = data.decks.reduce((a,d) => a + d.cards.filter(c => c.level >= 4).length, 0);
-    document.getElementById('stat-decks').textContent = data.decks.length;
-    document.getElementById('stat-cards').textContent = total;
-    document.getElementById('stat-mastered').textContent = mastered;
-    updateStreak();
-    document.getElementById('stat-streak').textContent = data.streak + '🔥';
-    const grid = document.getElementById('deck-grid');
-    grid.innerHTML = '';
-    data.decks.forEach(deck => {
-      const t = deck.cards.length;
-      const m = deck.cards.filter(c => c.level >= 4).length;
-      const pct = t ? Math.round(m / t * 100) : 0;
-      const div = document.createElement('div');
-      div.className = 'deck-card';
-      div.innerHTML = `<div class="deck-icon">${deck.icon||'📚'}</div><div class="deck-name">${deck.name}</div><div class="deck-count">${t} carte${t!==1?'s':''} · ${pct}% maîtrisé</div><div class="deck-progress"><div class="deck-progress-fill" style="width:${pct}%"></div></div><div class="deck-actions"><button class="btn-sm" onclick="event.stopPropagation();openDeck('${deck.id}')">Voir</button><button class="btn-sm danger" onclick="event.stopPropagation();deleteDeck('${deck.id}')">✕</button></div>`;
-      div.onclick = () => openDeck(deck.id);
-      grid.appendChild(div);
-    });
-    const add = document.createElement('div');
-    add.className = 'deck-card add-deck-card';
-    add.innerHTML = '<div style="font-size:28px;">＋</div><div>Créer un deck</div>';
-    add.onclick = () => openModal('modal-new-deck');
-    grid.appendChild(add);
-  }
+// ── THEME ─────────────────────────────────────────────────────
+let themePref = localStorage.getItem('mf_theme')||'auto';
+function applyTheme() {
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = themePref==='dark'||(themePref==='auto'&&sysDark);
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = dark?'☀️':'🌙';
+  ['auto','light','dark'].forEach(t=>{
+    document.getElementById('opt-'+t)?.classList.toggle('active',t===themePref);
+  });
+}
+function setThemePref(p){themePref=p;localStorage.setItem('mf_theme',p);applyTheme();}
+function cycleTheme(){const o=['auto','light','dark'];themePref=o[(o.indexOf(themePref)+1)%3];localStorage.setItem('mf_theme',themePref);applyTheme();}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 
-  function updateStreak() {
-    const today = new Date().toDateString();
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    if (data.lastStudy === today) return;
-    if (data.lastStudy === yesterday) data.streak++;
-    else if (data.lastStudy && data.lastStudy !== today) data.streak = 0;
-    data.lastStudy = today; save();
-  }
+// ── PAGES ─────────────────────────────────────────────────────
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>{
+    t.classList.toggle('active',['home','study','community','info','settings'][i]===p);
+  });
+  if(p==='home') renderHome();
+  if(p==='study') renderStudyPage();
+  if(p==='community') renderCommunity();
+  if(p==='settings') renderSettings();
+}
 
-  function openModal(id) { document.getElementById(id).classList.add('open'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg,dur=2500){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),dur);
+}
 
-  function createDeck() {
-    const name = document.getElementById('deck-name-inp').value.trim();
-    if (!name) return;
-    data.decks.push({ id: uid(), name, icon: document.getElementById('deck-icon-inp').value.trim() || '📚', cards: [] });
-    save(); closeModal('modal-new-deck');
-    document.getElementById('deck-name-inp').value = '';
-    document.getElementById('deck-icon-inp').value = '';
-    renderHome();
-  }
+// ── HOME ──────────────────────────────────────────────────────
+function renderHome() {
+  const total=data.decks.reduce((a,d)=>a+d.cards.length,0);
+  const mastered=data.decks.reduce((a,d)=>a+d.cards.filter(c=>c.level>=4).length,0);
+  document.getElementById('stat-decks').textContent=data.decks.length;
+  document.getElementById('stat-cards').textContent=total;
+  document.getElementById('stat-mastered').textContent=mastered;
+  const grid=document.getElementById('deck-grid');
+  grid.innerHTML='';
+  data.decks.forEach(deck=>{
+    const t=deck.cards.length, m=deck.cards.filter(c=>c.level>=4).length;
+    const pct=t?Math.round(m/t*100):0;
+    const div=document.createElement('div');
+    div.className='deck-card';
+    div.innerHTML=`<div class="deck-icon">${deck.icon||'📚'}</div>
+      <div class="deck-name">${esc(deck.name)}</div>
+      <div class="deck-count">${t} carte${t!==1?'s':''} · ${pct}% maîtrisé</div>
+      <div class="deck-progress"><div class="deck-progress-fill" style="width:${pct}%"></div></div>
+      <div class="deck-actions">
+        <button class="btn-sm" onclick="event.stopPropagation();openDeck('${deck.id}')">Voir</button>
+        <button class="btn-sm danger" onclick="event.stopPropagation();deleteDeck('${deck.id}')">✕</button>
+      </div>`;
+    div.onclick=()=>openDeck(deck.id);
+    grid.appendChild(div);
+  });
+  const add=document.createElement('div');
+  add.className='deck-card add-deck-card';
+  add.innerHTML='<div style="font-size:24px;">＋</div><div>Créer un deck</div>';
+  add.onclick=()=>openModal('modal-new-deck');
+  grid.appendChild(add);
+}
 
-  function deleteDeck(id) {
-    if (!confirm('Supprimer ce deck ?')) return;
-    data.decks = data.decks.filter(d => d.id !== id);
-    save(); renderHome();
-  }
+// ── MODALS ────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-  function openDeck(id) {
-    currentDeckId = id;
-    const deck = data.decks.find(d => d.id === id);
-    document.getElementById('modal-deck-title').textContent = deck.icon + ' ' + deck.name;
-    renderDeckCards(deck);
-    openModal('modal-deck');
-  }
+// ── DECK CRUD ─────────────────────────────────────────────────
+function createDeck(){
+  const name=document.getElementById('deck-name-inp').value.trim();
+  if(!name) return;
+  const icon=document.getElementById('deck-icon-inp').value.trim()||'📚';
+  const deck={id:uid(),name,icon,cards:[],shareCode:null};
+  data.decks.push(deck); save();
+  document.getElementById('deck-name-inp').value='';
+  document.getElementById('deck-icon-inp').value='';
+  closeModal('modal-new-deck');
+  if(window._fromQuizlet){window._fromQuizlet=false;renderSettings();setTimeout(()=>{const s=document.getElementById('quizlet-deck-sel');if(s)s.value=deck.id;},80);}
+  renderHome(); toast('Deck créé ✓');
+}
+function deleteDeck(id){
+  if(!confirm('Supprimer ce deck ?')) return;
+  data.decks=data.decks.filter(d=>d.id!==id);
+  save(); renderHome(); toast('Deck supprimé');
+}
+function openDeck(id){
+  currentDeckId=id;
+  const deck=data.decks.find(d=>d.id===id);
+  document.getElementById('modal-deck-title').textContent=deck.icon+' '+deck.name;
+  renderDeckCards(deck); openModal('modal-deck');
+}
+function renderDeckCards(deck){
+  const c=document.getElementById('modal-deck-cards');
+  if(!deck.cards.length){c.innerHTML='<div style="color:var(--ink3);font-size:13px;text-align:center;padding:14px;">Aucune carte encore.</div>';return;}
+  c.innerHTML=deck.cards.map((card,i)=>`
+    <div style="border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:flex-start;gap:9px;">
+      <div style="flex:1;"><div style="font-weight:500;font-size:13px;">${esc(card.front)}</div><div style="color:var(--ink2);font-size:12px;margin-top:2px;">${esc(card.back)}</div></div>
+      <div style="display:flex;gap:4px;align-items:center;flex-shrink:0;">
+        <span class="tag ${card.level>=4?'tag-mastered':card.level>0?'tag-review':'tag-new'}">${card.level>=4?'Maîtrisé':card.level>0?'En cours':'Nouveau'}</span>
+        <button class="btn-sm danger" onclick="deleteCard('${deck.id}',${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+function deleteCard(deckId,idx){
+  const deck=data.decks.find(d=>d.id===deckId);
+  deck.cards.splice(idx,1); save(); renderDeckCards(deck);
+}
+function openAddCard(){closeModal('modal-deck');openModal('modal-add-card');}
+function addCard(){
+  const front=document.getElementById('card-front-inp').value.trim();
+  const back=document.getElementById('card-back-inp').value.trim();
+  if(!front||!back) return;
+  const deck=data.decks.find(d=>d.id===currentDeckId);
+  deck.cards.push({id:uid(),front,back,level:0,nextReview:0,interval:1,ef:2.5});
+  save();
+  document.getElementById('card-front-inp').value='';
+  document.getElementById('card-back-inp').value='';
+  closeModal('modal-add-card'); openModal('modal-deck');
+  renderDeckCards(deck); toast('Carte ajoutée ✓');
+}
 
-  function renderDeckCards(deck) {
-    const c = document.getElementById('modal-deck-cards');
-    if (!deck.cards.length) { c.innerHTML = '<div style="color:var(--ink3);font-size:14px;text-align:center;padding:20px;">Aucune carte encore.</div>'; return; }
-    c.innerHTML = deck.cards.map((card, i) => `<div style="border:1px solid var(--cream2);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;"><div style="flex:1;"><div style="font-weight:500;font-size:14px;">${card.front}</div><div style="color:var(--ink2);font-size:13px;margin-top:3px;">${card.back}</div></div><div style="display:flex;gap:6px;align-items:center;"><span class="tag ${card.level>=4?'tag-mastered':card.level>0?'tag-review':'tag-new'}">${card.level>=4?'Maîtrisé':card.level>0?'En cours':'Nouveau'}</span><button class="btn-sm danger" onclick="deleteCard('${deck.id}',${i})">✕</button></div></div>`).join('');
+// ── STUDY ─────────────────────────────────────────────────────
+function renderStudyPage(){
+  document.getElementById('sel-deck').innerHTML='<option value="">— Choisir un deck —</option>'+
+    data.decks.map(d=>`<option value="${d.id}">${d.icon} ${esc(d.name)} (${d.cards.length})</option>`).join('');
+}
+function studyFromDeck(){closeModal('modal-deck');showPage('study');document.getElementById('sel-deck').value=currentDeckId;}
+function startMode(mode){
+  const deckId=document.getElementById('sel-deck').value;
+  if(!deckId){toast('Choisis d\'abord un deck !');return;}
+  const deck=data.decks.find(d=>d.id===deckId);
+  if(!deck.cards.length){toast('Ce deck est vide !');return;}
+  studyMode=mode; currentDeckId=deckId;
+  studyCards=[...deck.cards].sort(()=>Math.random()-.5);
+  if(mode==='spaced'){
+    studyCards=studyCards.filter(c=>!c.nextReview||c.nextReview<=Date.now());
+    if(!studyCards.length){toast('Aucune carte à réviser aujourd\'hui !');return;}
   }
-
-  function deleteCard(deckId, idx) {
-    const deck = data.decks.find(d => d.id === deckId);
-    deck.cards.splice(idx, 1); save(); renderDeckCards(deck);
-  }
-
-  function openAddCard() { closeModal('modal-deck'); openModal('modal-add-card'); }
-
-  function addCard() {
-    const front = document.getElementById('card-front-inp').value.trim();
-    const back = document.getElementById('card-back-inp').value.trim();
-    if (!front || !back) return;
-    const deck = data.decks.find(d => d.id === currentDeckId);
-    deck.cards.push({ id: uid(), front, back, level: 0, nextReview: 0, interval: 1, ef: 2.5 });
-    save();
-    document.getElementById('card-front-inp').value = '';
-    document.getElementById('card-back-inp').value = '';
-    closeModal('modal-add-card'); openModal('modal-deck'); renderDeckCards(deck);
-  }
-
-  function renderStudyPage() {
-    document.getElementById('sel-deck').innerHTML = '<option value="">— Sélectionner —</option>' +
-      data.decks.map(d => `<option value="${d.id}">${d.icon} ${d.name} (${d.cards.length} cartes)</option>`).join('');
-  }
-
-  function studyFromDeck() { closeModal('modal-deck'); showPage('study'); document.getElementById('sel-deck').value = currentDeckId; }
-
-  function startMode(mode) {
-    const deckId = document.getElementById('sel-deck').value;
-    if (!deckId) { alert('Choisis d\'abord un deck !'); return; }
-    const deck = data.decks.find(d => d.id === deckId);
-    if (!deck.cards.length) { alert('Ce deck est vide !'); return; }
-    studyMode = mode; currentDeckId = deckId;
-    studyCards = [...deck.cards].sort(() => Math.random() - 0.5);
-    if (mode === 'spaced') studyCards = studyCards.filter(c => !c.nextReview || c.nextReview <= Date.now());
-    if (!studyCards.length && mode === 'spaced') { alert('Aucune carte à réviser aujourd\'hui !'); return; }
-    studyIdx = 0; studyScore = 0;
-    document.getElementById('study-select').style.display = 'none';
-    ['flash','quiz','written','end'].forEach(m => document.getElementById('mode-'+m).style.display = 'none');
-    if (mode === 'flash' || mode === 'spaced') startFlash(deck);
-    else if (mode === 'quiz') startQuiz(deck);
-    else startWritten(deck);
-  }
-
-  function exitStudy() {
-    document.getElementById('study-select').style.display = 'block';
-    ['flash','quiz','written','end'].forEach(m => document.getElementById('mode-'+m).style.display = 'none');
-    renderHome();
-  }
-
-  function restartStudy() { startMode(studyMode); }
-
-  // FLASH
-  function startFlash(deck) { document.getElementById('mode-flash').style.display='block'; document.getElementById('flash-title').textContent=deck.icon+' '+deck.name; showFlashCard(); }
-  function showFlashCard() {
-    const card = studyCards[studyIdx];
-    document.getElementById('fc-front-text').textContent = card.front;
-    document.getElementById('fc-back-text').textContent = card.back;
-    document.getElementById('flashcard').classList.remove('flipped');
-    document.getElementById('flash-result-btns').style.display = 'none';
-    document.getElementById('flash-show-btn').style.display = 'block';
-    document.getElementById('flash-counter').textContent = (studyIdx+1)+' / '+studyCards.length;
-    document.getElementById('flash-prog').style.width = (studyIdx/studyCards.length*100)+'%';
-  }
-  function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
-  function showAnswer() { document.getElementById('flashcard').classList.add('flipped'); document.getElementById('flash-result-btns').style.display='block'; document.getElementById('flash-show-btn').style.display='none'; }
-  function nextCard(result) {
-    const card = studyCards[studyIdx];
-    const orig = data.decks.find(d=>d.id===currentDeckId).cards.find(c=>c.id===card.id);
-    if (orig) {
-      const q = result==='easy'?5:result==='ok'?4:result==='hard'?3:1;
-      if (q<3) { orig.interval=1; } else { orig.ef=Math.max(1.3,orig.ef+0.1-(5-q)*0.08); orig.interval=orig.interval<2?(q===5?4:1):Math.round(orig.interval*orig.ef); }
-      orig.level = Math.min(5, orig.level+(q>=4?1:-1));
-      orig.nextReview = Date.now()+orig.interval*86400000;
-      if (result!=='fail') studyScore++;
-    }
-    save(); studyIdx++; if (studyIdx>=studyCards.length) showEnd(); else showFlashCard();
-  }
-
-  // QUIZ
-  function startQuiz(deck) { document.getElementById('mode-quiz').style.display='block'; document.getElementById('quiz-title').textContent=deck.icon+' Quiz'; showQuizQ(); }
-  function showQuizQ() {
-    const card = studyCards[studyIdx]; quizAnswered = false;
-    document.getElementById('quiz-next-wrap').style.display='none';
-    document.getElementById('quiz-q').textContent = card.front;
-    document.getElementById('quiz-score-disp').textContent = 'Score : '+studyScore;
-    document.getElementById('quiz-prog').style.width = (studyIdx/studyCards.length*100)+'%';
-    const wrong = data.decks.find(d=>d.id===currentDeckId).cards.filter(c=>c.id!==card.id).sort(()=>Math.random()-0.5).slice(0,3);
-    const opts = [...wrong.map(c=>c.back), card.back].sort(()=>Math.random()-0.5);
-    document.getElementById('quiz-opts').innerHTML = opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(this,'${o.replace(/'/g,"\\'")}','${card.back.replace(/'/g,"\\'")}')"><span class="opt-letter">${['A','B','C','D'][i]}</span>${o}</button>`).join('');
-  }
-  function answerQuiz(btn, chosen, correct) {
-    if (quizAnswered) return; quizAnswered = true;
-    document.querySelectorAll('.quiz-opt').forEach(b => { const txt=b.textContent.trim().slice(1).trim(); if(txt===correct)b.classList.add('correct'); if(b===btn&&chosen!==correct)b.classList.add('wrong'); b.style.pointerEvents='none'; });
-    if (chosen===correct) studyScore++;
-    document.getElementById('quiz-next-wrap').style.display='block';
-  }
-  function nextQuiz() { studyIdx++; if(studyIdx>=studyCards.length)showEnd(); else showQuizQ(); }
-
-  // WRITTEN
-  function startWritten(deck) { document.getElementById('mode-written').style.display='block'; document.getElementById('written-title').textContent=deck.icon+' Mode écrit'; showWrittenQ(); }
-  function showWrittenQ() {
-    const card=studyCards[studyIdx]; writtenChecked=false;
-    document.getElementById('written-q').textContent=card.front;
-    document.getElementById('written-ans').value='';
-    document.getElementById('written-reveal').style.display='none';
-    document.getElementById('written-counter').textContent=(studyIdx+1)+' / '+studyCards.length;
-    document.getElementById('written-prog').style.width=(studyIdx/studyCards.length*100)+'%';
-    document.getElementById('written-btns').innerHTML='<button class="btn" onclick="checkWritten()">Vérifier ✓</button>';
-    document.getElementById('written-ans').focus();
-  }
-  function checkWritten() {
-    if(writtenChecked)return; writtenChecked=true;
-    const ans=document.getElementById('written-ans').value.trim().toLowerCase();
-    const correct=studyCards[studyIdx].back.trim().toLowerCase();
-    const ok=ans===correct||(correct.includes(ans)&&ans.length>2);
-    const r=document.getElementById('written-reveal'); r.style.display='block';
-    r.style.background=ok?'var(--sage-light)':'#fff0ee'; r.style.color=ok?'var(--sage-dark)':'var(--terra-dark)';
-    r.innerHTML=ok?'✅ Correct ! Réponse : <strong>'+studyCards[studyIdx].back+'</strong>':'❌ Réponse attendue : <strong>'+studyCards[studyIdx].back+'</strong>';
-    if(ok)studyScore++;
-    document.getElementById('written-btns').innerHTML='<button class="btn" onclick="nextWritten()">Suivant →</button>';
-  }
-  function nextWritten() { studyIdx++; if(studyIdx>=studyCards.length)showEnd(); else showWrittenQ(); }
-
-  // END
-  function showEnd() {
-    ['flash','quiz','written'].forEach(m=>document.getElementById('mode-'+m).style.display='none');
-    document.getElementById('mode-end').style.display='block';
-    const pct=Math.round(studyScore/studyCards.length*100);
-    document.getElementById('end-title').textContent=pct>=80?'🎉 Excellent travail !':pct>=50?'👍 Bien joué !':'💪 Continue !';
-    document.getElementById('end-stats').innerHTML='Score : <strong>'+studyScore+' / '+studyCards.length+'</strong> ('+pct+'%)';
-    const name=localStorage.getItem('mf-username');
-    if(name){data.scores.push({name,pct,date:new Date().toLocaleDateString('fr-FR')});data.scores.sort((a,b)=>b.pct-a.pct);if(data.scores.length>50)data.scores.length=50;}
-    save();
-  }
-
-  // LEADERBOARD
-  function renderLB() {
-    const medals=['🥇','🥈','🥉'], list=document.getElementById('lb-list');
-    if(!data.scores.length){list.innerHTML='<div style="color:var(--ink3);text-align:center;padding:30px;">Aucun score encore.</div>';return;}
-    list.innerHTML=data.scores.slice(0,10).map((s,i)=>`<div class="lb-row"><div class="lb-rank">${medals[i]||(i+1)}</div><div class="lb-name">${s.name}</div><div class="lb-score">${s.date}</div><span class="lb-badge">${s.pct}%</span></div>`).join('');
-  }
-  function addScore() {
-    const name=document.getElementById('lb-name-inp').value.trim(); if(!name)return;
-    localStorage.setItem('mf-username',name);
-    alert('Pseudo enregistré ! Ton score sera ajouté automatiquement après chaque session.');
-    document.getElementById('lb-name-inp').value='';
-  }
-
-  // IMPORT / EXPORT
-  function exportData() {
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='memoflash-backup.json'; a.click();
-  }
-  function importData(e) {
-    const file=e.target.files[0]; if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{try{const imp=JSON.parse(ev.target.result);if(imp.decks){data.decks=[...data.decks,...imp.decks];if(imp.scores)data.scores=[...data.scores,...imp.scores];save();renderHome();alert('Import réussi !');}else alert('Fichier invalide.');}catch{alert('Erreur lors de l\'import.');}};
-    reader.readAsText(file);
-  }
-  function renderBulkDeckSelect() {
-    document.getElementById('bulk-deck').innerHTML=data.decks.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('')||'<option>Aucun deck</option>';
-  }
-  function bulkImport() {
-    const deckId=document.getElementById('bulk-deck').value, text=document.getElementById('bulk-text').value.trim(); if(!deckId||!text)return;
-    const deck=data.decks.find(d=>d.id===deckId); let count=0;
-    text.split('\n').forEach(line=>{const parts=line.split(';');if(parts.length>=2){deck.cards.push({id:uid(),front:parts[0].trim(),back:parts.slice(1).join(';').trim(),level:0,nextReview:0,interval:1,ef:2.5});count++;}});
-    save(); alert(count+' carte(s) importée(s) !'); document.getElementById('bulk-text').value='';
-  }
-  function clearAll() { if(!confirm('Supprimer TOUTES les données ?'))return; data={decks:[],scores:[],streak:0,lastStudy:''}; save(); renderHome(); alert('Données effacées.'); }
-
+  studyIdx=0; studyScore=0;
+  document.getElementById('study-select').style.display='none';
+  ['flash','quiz','written','end'].forEach(m=>document.getElementById('mode-'+m).style.display='none');
+  if(mode==='flash'||mode==='spaced') startFlash(deck);
+  else if(mode==='quiz') startQuiz(deck);
+  else startWritten(deck);
+}
+function exitStudy(){
+  document.getElementById('study-select').style.display='block';
+  ['flash','quiz','written','end'].forEach(m=>document.getElementById('mode-'+m).style.display='none');
   renderHome();
+}
+function restartStudy(){startMode(studyMode);}
+
+// FLASH
+function startFlash(deck){document.getElementById('mode-flash').style.display='block';document.getElementById('flash-title').textContent=deck.icon+' '+deck.name;showFlashCard();}
+function showFlashCard(){
+  const card=studyCards[studyIdx];
+  document.getElementById('fc-front-text').textContent=card.front;
+  document.getElementById('fc-back-text').textContent=card.back;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('flash-result-btns').style.display='none';
+  document.getElementById('flash-show-btn').style.display='block';
+  document.getElementById('flash-counter').textContent=(studyIdx+1)+' / '+studyCards.length;
+  document.getElementById('flash-prog').style.width=(studyIdx/studyCards.length*100)+'%';
+}
+function flipCard(){document.getElementById('flashcard').classList.toggle('flipped');}
+function showAnswer(){document.getElementById('flashcard').classList.add('flipped');document.getElementById('flash-result-btns').style.display='block';document.getElementById('flash-show-btn').style.display='none';}
+function nextCard(result){
+  const card=studyCards[studyIdx];
+  const orig=data.decks.find(d=>d.id===currentDeckId)?.cards.find(c=>c.id===card.id);
+  if(orig){
+    const q=result==='easy'?5:result==='ok'?4:result==='hard'?3:1;
+    if(q<3){orig.interval=1;}else{orig.ef=Math.max(1.3,orig.ef+.1-(5-q)*.08);orig.interval=orig.interval<2?(q===5?4:1):Math.round(orig.interval*orig.ef);}
+    orig.level=Math.min(5,orig.level+(q>=4?1:-1));
+    orig.nextReview=Date.now()+orig.interval*86400000;
+    if(result!=='fail') studyScore++;
+  }
+  save(); studyIdx++;
+  if(studyIdx>=studyCards.length) showEnd(); else showFlashCard();
+}
+
+// QUIZ
+function startQuiz(deck){document.getElementById('mode-quiz').style.display='block';document.getElementById('quiz-title').textContent=deck.icon+' Quiz';showQuizQ();}
+function showQuizQ(){
+  const card=studyCards[studyIdx]; quizAnswered=false;
+  document.getElementById('quiz-next-wrap').style.display='none';
+  document.getElementById('quiz-q').textContent=card.front;
+  document.getElementById('quiz-score-disp').textContent='Score : '+studyScore;
+  document.getElementById('quiz-prog').style.width=(studyIdx/studyCards.length*100)+'%';
+  const all=data.decks.find(d=>d.id===currentDeckId)?.cards||[];
+  const wrong=all.filter(c=>c.id!==card.id).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[...wrong.map(c=>c.back),card.back].sort(()=>Math.random()-.5);
+  document.getElementById('quiz-opts').innerHTML=opts.map((o,i)=>{
+    const safe=esc(o);
+    return `<button class="quiz-opt" data-val="${safe}" onclick="answerQuiz(this)"><span class="opt-letter">${['A','B','C','D'][i]}</span>${safe}</button>`;
+  }).join('');
+  document.getElementById('quiz-opts').dataset.correct=esc(card.back);
+}
+function answerQuiz(btn){
+  if(quizAnswered) return; quizAnswered=true;
+  const correct=document.getElementById('quiz-opts').dataset.correct;
+  const chosen=btn.getAttribute('data-val');
+  document.querySelectorAll('.quiz-opt').forEach(b=>{
+    if(b.getAttribute('data-val')===correct) b.classList.add('correct');
+    if(b===btn&&chosen!==correct) b.classList.add('wrong');
+    b.style.pointerEvents='none';
+  });
+  if(chosen===correct) studyScore++;
+  document.getElementById('quiz-next-wrap').style.display='block';
+}
+function nextQuiz(){studyIdx++;if(studyIdx>=studyCards.length)showEnd();else showQuizQ();}
+
+// WRITTEN
+function startWritten(deck){document.getElementById('mode-written').style.display='block';document.getElementById('written-title').textContent=deck.icon+' Mode écrit';showWrittenQ();}
+function showWrittenQ(){
+  const card=studyCards[studyIdx]; writtenChecked=false;
+  document.getElementById('written-q').textContent=card.front;
+  document.getElementById('written-ans').value='';
+  document.getElementById('written-reveal').style.display='none';
+  document.getElementById('written-counter').textContent=(studyIdx+1)+' / '+studyCards.length;
+  document.getElementById('written-prog').style.width=(studyIdx/studyCards.length*100)+'%';
+  document.getElementById('written-btns').innerHTML='<button class="btn" onclick="checkWritten()">Vérifier ✓</button>';
+  setTimeout(()=>document.getElementById('written-ans').focus(),80);
+}
+function checkWritten(){
+  if(writtenChecked) return; writtenChecked=true;
+  const ans=document.getElementById('written-ans').value.trim().toLowerCase();
+  const correct=studyCards[studyIdx].back.trim().toLowerCase();
+  const ok=ans===correct||(correct.includes(ans)&&ans.length>2);
+  const r=document.getElementById('written-reveal');
+  r.style.display='block';
+  r.style.background=ok?'var(--sage-light)':'#fff0ee';
+  r.style.color=ok?'var(--sage-dark)':'var(--terra-dark)';
+  r.innerHTML=ok?'✅ Correct ! Réponse : <strong>'+esc(studyCards[studyIdx].back)+'</strong>':'❌ Réponse : <strong>'+esc(studyCards[studyIdx].back)+'</strong>';
+  if(ok) studyScore++;
+  document.getElementById('written-btns').innerHTML='<button class="btn" onclick="nextWritten()">Suivant →</button>';
+}
+function nextWritten(){studyIdx++;if(studyIdx>=studyCards.length)showEnd();else showWrittenQ();}
+
+// END
+function showEnd(){
+  ['flash','quiz','written'].forEach(m=>document.getElementById('mode-'+m).style.display='none');
+  document.getElementById('mode-end').style.display='block';
+  const pct=Math.round(studyScore/studyCards.length*100);
+  document.getElementById('end-title').textContent=pct>=80?'🎉 Excellent !':pct>=50?'👍 Bien joué !':'💪 Continue !';
+  document.getElementById('end-stats').innerHTML='Score : <strong>'+studyScore+' / '+studyCards.length+'</strong> ('+pct+'%)';
+  save();
+}
+
+// ── COMMUNITY (SUPABASE) ──────────────────────────────────────
+function renderCommunity(){
+  const sel=document.getElementById('share-deck-sel');
+  sel.innerHTML=data.decks.length
+    ?data.decks.map(d=>`<option value="${d.id}">${d.icon} ${esc(d.name)}</option>`).join('')
+    :'<option>Aucun deck local</option>';
+}
+function sbConfigured(){return !SUPABASE_URL.includes('VOTRE_PROJET');}
+async function sbFetch(path,opts={}){
+  if(!sbConfigured()) throw new Error('Supabase non configuré — suis les instructions dans le code source (commentaires ⚙️).');
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+    ...opts
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function fetchDeck(){
+  const code=document.getElementById('search-code').value.trim().toUpperCase();
+  if(code.length!==6){toast('Entre un code à 6 caractères');return;}
+  const btn=document.getElementById('fetch-btn');
+  btn.disabled=true; btn.textContent='...';
+  const el=document.getElementById('fetch-result');
+  try{
+    const rows=await sbFetch(`decks?share_code=eq.${code}&select=*`);
+    if(!rows.length){el.innerHTML='<p style="color:var(--terra);font-size:13px;margin-top:9px;">Aucun deck trouvé avec ce code.</p>';return;}
+    const r=rows[0];
+    const cards=JSON.parse(r.cards_json);
+    const alreadyHave=data.decks.some(d=>d.shareCode===code);
+    el.innerHTML=`<div class="card" style="margin-top:12px;">
+      <div style="font-size:20px;margin-bottom:5px;">${r.icon||'📚'}</div>
+      <div style="font-weight:500;font-size:14px;">${esc(r.name)}</div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:12px;">${cards.length} cartes</div>
+      ${alreadyHave?'<p style="font-size:13px;color:var(--ink3);">✓ Tu as déjà ce deck</p>':'<button class="btn" onclick=\'importRemote('+JSON.stringify(JSON.stringify(r))+')\'> Ajouter à mes decks ↓</button>'}
+    </div>`;
+  }catch(e){el.innerHTML=`<p style="color:var(--terra);font-size:13px;margin-top:9px;">${esc(e.message)}</p>`;}
+  finally{btn.disabled=false;btn.textContent='Rechercher';}
+}
+function importRemote(json){
+  const r=JSON.parse(json);
+  const cards=JSON.parse(r.cards_json).map(c=>({id:uid(),front:c.front,back:c.back,level:0,nextReview:0,interval:1,ef:2.5}));
+  data.decks.push({id:uid(),name:r.name,icon:r.icon||'📚',cards,shareCode:r.share_code});
+  save(); toast('Deck ajouté à tes decks ✓');
+  document.getElementById('fetch-result').innerHTML='<p style="color:var(--sage-dark);font-size:13px;margin-top:9px;">✅ Deck ajouté — visible dans Accueil !</p>';
+}
+async function shareDeck(){
+  const deckId=document.getElementById('share-deck-sel').value;
+  if(!deckId){toast('Choisis un deck');return;}
+  const deck=data.decks.find(d=>d.id===deckId);
+  if(!deck.cards.length){toast('Ce deck est vide !');return;}
+  const el=document.getElementById('share-result');
+  el.innerHTML='<p style="font-size:13px;color:var(--ink3);">Publication...</p>';
+  const code=deck.shareCode||genCode();
+  try{
+    await sbFetch('decks?on_conflict=share_code',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates,return=representation'},
+      body:JSON.stringify({share_code:code,name:deck.name,icon:deck.icon||'📚',cards_json:JSON.stringify(deck.cards.map(c=>({front:c.front,back:c.back})))})
+    });
+    deck.shareCode=code; save();
+    document.getElementById('share-code-display').textContent=code;
+    openModal('modal-share'); el.innerHTML='';
+  }catch(e){el.innerHTML=`<p style="color:var(--terra);font-size:13px;">${esc(e.message)}</p>`;}
+}
+function copyCode(){
+  const code=document.getElementById('share-code-display').textContent;
+  navigator.clipboard?.writeText(code).then(()=>toast('Code copié ✓'));
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function renderSettings(){
+  applyTheme();
+  ['bulk-deck','quizlet-deck-sel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML=data.decks.length
+      ?data.decks.map(d=>`<option value="${d.id}">${d.icon} ${esc(d.name)}</option>`).join('')
+      :'<option value="">Aucun deck</option>';
+  });
+}
+function importQuizlet(){
+  const deckId=document.getElementById('quizlet-deck-sel').value;
+  const text=document.getElementById('quizlet-text').value.trim();
+  if(!deckId||!text){toast('Choisis un deck et colle le texte Quizlet');return;}
+  const deck=data.decks.find(d=>d.id===deckId);
+  let count=0;
+  text.split('\n').forEach(line=>{
+    line=line.trim(); if(!line) return;
+    // Priorité : tabulation (Quizlet natif), puis ; puis ,
+    const sep=line.includes('\t')?'\t':line.includes(';')?';':',';
+    const idx=line.indexOf(sep);
+    if(idx<1) return;
+    const front=line.slice(0,idx).trim();
+    const back=line.slice(idx+1).trim();
+    if(front&&back){deck.cards.push({id:uid(),front,back,level:0,nextReview:0,interval:1,ef:2.5});count++;}
+  });
+  save();
+  document.getElementById('quizlet-text').value='';
+  toast(count+' carte(s) importée(s) depuis Quizlet ✓');
+}
+function bulkImport(){
+  const deckId=document.getElementById('bulk-deck').value;
+  const text=document.getElementById('bulk-text').value.trim();
+  if(!deckId||!text){toast('Choisis un deck et entre les cartes');return;}
+  const deck=data.decks.find(d=>d.id===deckId);
+  let count=0;
+  text.split('\n').forEach(line=>{
+    const parts=line.split(';');
+    if(parts.length>=2){deck.cards.push({id:uid(),front:parts[0].trim(),back:parts.slice(1).join(';').trim(),level:0,nextReview:0,interval:1,ef:2.5});count++;}
+  });
+  save(); document.getElementById('bulk-text').value='';
+  toast(count+' carte(s) importée(s) ✓');
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='memoflash-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); toast('Export téléchargé ✓');
+}
+function importData(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const imp=JSON.parse(ev.target.result);
+      if(imp.decks){
+        const existing=new Set(data.decks.map(d=>d.id));
+        imp.decks.forEach(d=>{if(!existing.has(d.id))data.decks.push(d);});
+        save(); renderHome(); toast('Import réussi ✓');
+      }else toast('Fichier invalide');
+    }catch{toast('Erreur lors de l\'import');}
+  };
+  reader.readAsText(file); e.target.value='';
+}
+function clearAll(){
+  if(!confirm('Supprimer TOUTES les données locales ? Irréversible.')) return;
+  data={decks:[]}; save(); renderHome(); toast('Données effacées');
+}
+
+// ── FAQ ───────────────────────────────────────────────────────
+function toggleFaq(el){
+  const a=el.nextElementSibling, s=el.querySelector('span');
+  a.classList.toggle('open'); s.textContent=a.classList.contains('open')?'−':'+';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+applyTheme();
+renderHome();
 </script>
 </body>
 </html>
